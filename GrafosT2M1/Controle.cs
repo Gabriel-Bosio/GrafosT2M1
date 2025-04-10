@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GrafosT1M1
+namespace GrafosT2M1
 {
     internal class Controle
     {

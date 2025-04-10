@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GrafosT1M1
+namespace GrafosT2M1
 {
     internal class GrafoLista : Grafo
     {
@@ -78,7 +78,7 @@ namespace GrafosT1M1
         {
             if (ExisteAresta(origem, destino)) return false;
 
-            float val = !Ponderado && peso != 1 ? 1 : peso;
+            float val = !Ponderado? 1 : peso;
 
             Arestas[origem].Add((destino, val));
 
@@ -119,6 +119,57 @@ namespace GrafosT1M1
         public override List<int> RetornarVizinhos(int vertice)
         {
             return Arestas[vertice].Select(aresta => aresta.destino).ToList();
+        }
+
+        protected override void BuscaProfundidade(int origem, ref List<int> verticesVisitadas)
+        {
+            verticesVisitadas.Add(origem);
+            foreach(var aresta in Arestas[origem])
+            {
+                if (!verticesVisitadas.Any(vertice => vertice == aresta.destino))
+                {
+                    BuscaProfundidade(aresta.destino, ref verticesVisitadas);
+                }
+            }
+        }
+
+        public override List<int> RetornarBuscaLargura(int origem)
+        {
+            Console.Write("\n\nBusca por largura: ");
+
+            List<int> verticesVisitadas = new List<int>();
+            List<int> fila = new List<int>();
+            fila.Add(origem);
+            verticesVisitadas.Add(origem);
+
+            while (fila.Count > 0) 
+            {
+                int atual = fila[0];
+
+                foreach (var aresta in Arestas[atual])
+                {
+                    if (!verticesVisitadas.Any(vertice => vertice == aresta.destino))
+                    {
+                        fila.Add(aresta.destino);
+                        verticesVisitadas.Add(aresta.destino);
+                    }
+                }
+                fila.RemoveAt(0);
+            }
+
+            for (int i = 0; i < verticesVisitadas.Count; i++)
+            {
+                Console.Write($"{LabelVertice(verticesVisitadas[i])}");
+                if (i < verticesVisitadas.Count - 1)
+                    Console.Write(" -> ");
+            }
+
+            return verticesVisitadas;
+        }
+
+        public override List<float> RetornaDijkstra(int origem) 
+        {
+            return new List<float>();
         }
     }
 }

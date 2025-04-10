@@ -1,4 +1,4 @@
-﻿using GrafosT1M1;
+﻿using GrafosT2M1;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -98,7 +98,7 @@ namespace GrafosT2M1
                     for (int i = 0; i < arestas; i++)
                     {
                         linha = sr.ReadLine();
-                        if (linha == null) break; // Interrome caso não tenha lido nada
+                        if (linha == null) break; // Interrompe caso não tenha lido nada
 
                         partes = linha.Split(' ');
 
