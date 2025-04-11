@@ -7,7 +7,7 @@ internal class Program
         GrafoMatriz grafoM = null;
         GrafoLista grafoL = null;
 
-        LeitorGrafo leitor = new LeitorGrafo("C:\\Estudos_Univali\\Grafos\\GrafosT2M1\\GrafosT2M1\\grafo.txt");
+        LeitorGrafo leitor = new LeitorGrafo(".\\..\\..\\..\\grafo.txt");
 
         leitor.GeraGrafo(ref grafoM);
         
@@ -29,6 +29,8 @@ internal class Program
         grafoL.ImprimeBusca(grafoL.RetornarBuscaLargura(5), true);
 
         grafoL.ImprimeBusca(grafoL.RetornarDijkstra(5));
+
+        Console.WriteLine("\n\n\n\n");
     }
 
 

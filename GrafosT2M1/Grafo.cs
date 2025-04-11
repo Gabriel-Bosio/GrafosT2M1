@@ -190,7 +190,7 @@ namespace GrafosT2M1
             Console.WriteLine($"\nMenores caminhos a partir de {LabelVertice(distancias.IndexOf(0))}:");
             for (int i = 0; i < distancias.Count; i++)
             {
-                Console.WriteLine($"{LabelVertice(i)} = {distancias[i]}\n");
+                Console.WriteLine($"\n{LabelVertice(i)} = {distancias[i]}");
             }
         }
         #endregion
