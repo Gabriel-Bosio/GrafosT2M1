@@ -13,6 +13,8 @@ namespace GrafosT2M1
     internal class GrafoMatriz : Grafo
     {
 
+        #region Atributos, propriedades e construtor
+
         private List<List<float>> _arestas;
 
         public List<List<float>> Arestas
@@ -26,10 +28,13 @@ namespace GrafosT2M1
             _arestas = new List<List<float>>();
         }
 
+        #endregion
+
+        #region Controle vértices
         public bool InserirVertice(string label)
         {
-            // Não insere caso label já existir
-            if (base.InserirVertice(label))
+            // Adiciona o vértice no método pai e ajusta o grafo caso sucedido
+            if (base.InserirVertice(label)) 
             {
                 int index = Vertices.IndexOf(label);
 
@@ -43,7 +48,7 @@ namespace GrafosT2M1
 
         public bool RemoverVertice(int indice)
         {
-
+            // Remove o vértice no método pai e ajusta o grafo caso sucedido
             if (base.RemoverVertice(indice)) 
             {
                 Arestas.RemoveAt(indice);
@@ -54,6 +59,9 @@ namespace GrafosT2M1
             return false;
         }
 
+        #endregion
+
+        #region Grafo e controle de arestas
         public override void ImprimeGrafo() // Em processo
         {
 
@@ -96,7 +104,7 @@ namespace GrafosT2M1
 
         public override bool InserirAresta(int origem, int destino, float peso = 1)
         {
-            if (ExisteAresta(origem, destino) || peso < 1) return false;
+            if (ExisteAresta(origem, destino) || peso < 1) return false; // Não insere caso já exista
 
             float val = !Ponderado? 1 : peso;
 
@@ -109,7 +117,7 @@ namespace GrafosT2M1
 
         public override bool RemoverAresta(int origem, int destino)
         {
-            if (!ExisteAresta(origem, destino)) return false;
+            if (!ExisteAresta(origem, destino)) return false; // Não remove caso não exista
 
             Arestas[origem][destino] = 0;
 
@@ -138,79 +146,6 @@ namespace GrafosT2M1
 
             return vizinhos;
         }
-
-        protected override void BuscaProfundidade(int origem, ref List<int> verticesVisitadas)
-        {
-            verticesVisitadas.Add(origem);
-            for(int i = 0; i < Arestas[origem].Count; i++)
-            {
-                if (Arestas[origem][i] != 0 && !verticesVisitadas.Any(x => x == i))
-                {
-                    BuscaProfundidade(i, ref verticesVisitadas);
-                }
-            }
-        }
-
-        public override List<int> RetornarBuscaLargura(int origem)
-        {
-            Console.Write("\n\nBusca por largura: ");
-
-            List<int> verticesVisitadas = new List<int>();
-            List<int> fila = new List<int>();
-            fila.Add(origem);
-            verticesVisitadas.Add(origem);
-
-            while (fila.Count > 0)
-            {
-                int atual = fila[0];
-
-                for (int i = 0; i < Arestas[atual].Count; i++)
-                {
-                    if (Arestas[atual][i] != 0 && !verticesVisitadas.Any(x => x == i))
-                    {
-                        fila.Add(i);
-                        verticesVisitadas.Add(i);
-                    }
-                }
-                fila.RemoveAt(0);
-            }
-
-            for (int i = 0; i < verticesVisitadas.Count; i++)
-            {
-                Console.Write($"{LabelVertice(verticesVisitadas[i])}");
-                if (i < verticesVisitadas.Count - 1)
-                    Console.Write(" -> ");
-            }
-
-            return verticesVisitadas;
-        }
-
-        public override List<float> RetornaDijkstra(int origem)
-        {
-            var tabela = new List<TabelaDijkstra>();
-            Vertices.ForEach(vertice => tabela.Add(new TabelaDijkstra(-1, -1, false)));
-
-            int verticeAtual = origem;
-            tabela[verticeAtual].Distancia = 0;
-
-            do
-            {
-                List<int> vizinhos = RetornarVizinhos(verticeAtual);
-                foreach (int verticeDestino in vizinhos)
-                {
-                    float distancia = tabela[verticeAtual].Distancia + PesoAresta(verticeAtual, verticeDestino);
-                    if (distancia < tabela[verticeDestino].Distancia)
-                    {
-                        tabela[verticeDestino].Distancia = distancia;
-                        tabela[verticeDestino].VerticeAnterior = verticeAtual;
-                    }
-                }
-                tabela[verticeAtual].Fechado = true;
-                verticeAtual = tabela.IndexOf(tabela.FirstOrDefault(vertice => !vertice.Fechado && vertice.Distancia >= 0));
-
-            } while ((tabela.Any(vertice => !vertice.Fechado && vertice.Distancia >= 0)));
-
-            return tabela.Select(x => x.Distancia).ToList();
-        }
+        #endregion
     }
 }

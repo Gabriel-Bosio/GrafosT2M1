@@ -8,6 +8,9 @@ namespace GrafosT2M1
 {
     internal abstract class Grafo
     {
+
+        #region Atributos, propriedades e construtor
+
         private bool _ponderado;
         private bool _direcionado;
         private List<string> _vertices;
@@ -35,6 +38,9 @@ namespace GrafosT2M1
             _vertices = new List<string>();
         }
 
+        #endregion
+
+        #region Controle vértices
         protected bool InserirVertice(string label)
         {
             // Não insere caso label já existir
@@ -48,7 +54,8 @@ namespace GrafosT2M1
 
         protected bool RemoverVertice(int indice)
         {
-            if (indice < 0 || indice >= Vertices.Count)
+            //Não remove caso índice inválido
+            if (indice < 0 || indice >= Vertices.Count) 
                 return false;
 
             Vertices.RemoveAt(indice);
@@ -61,6 +68,9 @@ namespace GrafosT2M1
             return Vertices[index];
         }
 
+        #endregion
+
+        #region Grafo e controle de arestas
         public abstract void ImprimeGrafo();
 
         public abstract bool InserirAresta(int origem, int destino, float peso = 1);
@@ -73,28 +83,116 @@ namespace GrafosT2M1
 
         public abstract List<int> RetornarVizinhos(int vertice);
 
+        #endregion
+
+        #region Buscas
         public List<int> RetornarBuscaProfundidade(int origem)
         {
-            Console.Write("\n\nBusca por profundidade: ");
-
             List<int> verticesVisitadas = new List<int>();
 
-            BuscaProfundidade(origem, ref verticesVisitadas);
-
-            for (int i = 0; i < verticesVisitadas.Count; i++)
-            {
-                Console.Write($"{LabelVertice(verticesVisitadas[i])}");
-                if(i < verticesVisitadas.Count - 1)
-                    Console.Write(" -> ");
-            } 
+            BuscaProfundidade(origem, ref verticesVisitadas); //Inicia a busca de forma recursiva
 
             return verticesVisitadas;
         }
 
-        protected abstract void BuscaProfundidade(int origem, ref List<int> verticesVisitadas);
+        private void BuscaProfundidade(int origem, ref List<int> verticesVisitadas)
+        {
+            verticesVisitadas.Add(origem);
+            List<int> vizinhos = RetornarVizinhos(origem);
+            foreach (int vizinho in vizinhos)
+            {
+                if (!verticesVisitadas.Any(v => v == vizinho))
+                {
+                    BuscaProfundidade(vizinho, ref verticesVisitadas);
+                }
+            }
+        }
 
-        public abstract List<int> RetornarBuscaLargura(int origem);
+        public List<int> RetornarBuscaLargura(int origem)
+        {
 
-        public abstract List<float> RetornaDijkstra(int origem);
+            List<int> verticesVisitadas = new List<int>();
+            List<int> fila = new List<int>();
+
+            //Visita o vertice de origem (Adiciona na fila e adiciona na lista de visitados)
+            verticesVisitadas.Add(origem);
+            fila.Add(origem);
+            
+
+            while (fila.Count > 0)
+            {
+                int atual = fila[0]; //Seleciona o próximo vértice da fila
+                List<int> vizinhos = RetornarVizinhos(atual);
+
+                foreach (int vizinho in vizinhos)
+                {
+                    if (!verticesVisitadas.Any(v => v == vizinho)) //Visita todos os vizinhos que ainda não foram vizitados 
+                    {
+                        verticesVisitadas.Add(vizinho);
+                        fila.Add(vizinho);   
+                    }
+                }
+                fila.RemoveAt(0); //Remove da fila o vértice que acabou de ser selecionado
+            }
+
+            return verticesVisitadas;
+        }
+
+        public List<float> RetornarDijkstra(int origem)
+        {
+            var tabela = new List<TabelaDijkstra>(); 
+            Vertices.ForEach(vertice => tabela.Add(new TabelaDijkstra(-1, false))); // Composto por distância e verificador de fechamento
+
+            //Inicia distância 0 para origem e seleciona como vertice atual
+            int verticeAtual = origem;
+            tabela[verticeAtual].Distancia = 0; 
+
+            do
+            {
+                //Verifica a distância dos vizinhos do vértice atual e fecha o vértice em seguida
+                List<int> vizinhos = RetornarVizinhos(verticeAtual);
+                foreach (int verticeDestino in vizinhos)
+                {
+                    float distancia = tabela[verticeAtual].Distancia + PesoAresta(verticeAtual, verticeDestino);
+                    if (distancia < tabela[verticeDestino].Distancia || tabela[verticeDestino].Distancia < 0) 
+                    {
+                        tabela[verticeDestino].Distancia = distancia; //Atualiza a distância caso seja a primeira ou a menor
+                    }
+                }
+                tabela[verticeAtual].Fechado = true;
+
+                verticeAtual = tabela.IndexOf(tabela.FirstOrDefault(vertice => !vertice.Fechado && vertice.Distancia >= 0)); //Seleciona próximo vértice aberto com distância conhecida
+
+            } while (verticeAtual >= 0); //Encerra laço caso não tenha mais vértices acessíveis
+
+            return tabela.Select(x => x.Distancia).ToList(); //Retorna distâncias, o índice corresponde ao índice do vértice
+        }
+
+        //Sobrecarga que imprime ordem de acesso em buscas de profundidade e largura
+        public void ImprimeBusca(List<int> vizitas, bool isLargura = false)
+        {
+            if (isLargura) 
+                Console.Write("\nBusca por Largura: ");
+            else
+                Console.Write("\nBusca por Profundidade: ");
+
+            for (int i = 0; i < vizitas.Count; i++)
+            {
+                Console.Write($"{vizitas[i]}");
+                if(i < vizitas.Count - 1) Console.Write($" -> ");
+            }
+            Console.WriteLine();
+        }
+
+        //Sobrecarga que imprime distâncias de um ponto de origem para cada vértice com base em busca de Dijkstra
+        public void ImprimeBusca(List<float> distancias)
+        {
+            Console.WriteLine($"\nMenores caminhos a partir de {LabelVertice(distancias.IndexOf(0))}:");
+            for (int i = 0; i < distancias.Count; i++)
+            {
+                Console.WriteLine($"{LabelVertice(i)} = {distancias[i]}\n");
+            }
+        }
+        #endregion
     }
 }

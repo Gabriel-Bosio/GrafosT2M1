@@ -11,20 +11,16 @@ namespace GrafosT2M1
     {
         private float _distancia;
 
-        private int _verticeAnterior;
-
         private bool _fechado;
 
         public float Distancia { get => _distancia; set => _distancia = value; }
 
-        public int VerticeAnterior { get => _verticeAnterior; set => _verticeAnterior = value; }
 
         public bool Fechado { get => _fechado; set => _fechado = value; }
 
-        public TabelaDijkstra(float distancia, int verticeAnterior, bool fechado)
+        public TabelaDijkstra(float distancia, bool fechado)
         {
             _distancia = distancia;
-            _verticeAnterior = verticeAnterior;
             _fechado = fechado;
         }
     }

@@ -8,6 +8,8 @@ namespace GrafosT2M1
 {
     internal class GrafoLista : Grafo
     {
+        #region Atributos, propriedades e construtor
+
         private List<List<(int destino, float peso)>> _arestas;
 
         public List<List<(int destino, float peso)>> Arestas
@@ -21,10 +23,14 @@ namespace GrafosT2M1
             _arestas = new List<List<(int destino, float peso)>>();
         }
 
+        #endregion
+
+        #region Controle vértices
         public bool InserirVertice(string label)
         {
-            // Não insere caso label já existir
-            if(base.InserirVertice(label)){
+            // Adiciona o vértice no método pai e ajusta o grafo caso sucedido
+            if (base.InserirVertice(label)) 
+            { 
                 Arestas.Add(new List<(int destino, float peso)>());
                 return true;
             }
@@ -33,7 +39,8 @@ namespace GrafosT2M1
 
         public bool RemoverVertice(int indice)
         {
-            if (base.RemoverVertice(indice))
+            // Remove o vértice no método pai e ajusta o grafo caso sucedido
+            if (base.RemoverVertice(indice)) 
             {
                 Arestas.RemoveAt(indice);
 
@@ -60,6 +67,10 @@ namespace GrafosT2M1
             return false;
             
         }
+
+        #endregion
+
+        #region Grafo e controle de arestas
         public override void ImprimeGrafo()
         {
 
@@ -74,9 +85,9 @@ namespace GrafosT2M1
             }
         }
 
-        public override bool InserirAresta(int origem, int destino, float peso = 1)
+        public override bool InserirAresta(int origem, int destino, float peso = 1) 
         {
-            if (ExisteAresta(origem, destino)) return false;
+            if (ExisteAresta(origem, destino)) return false; // Não insere caso já exista
 
             float val = !Ponderado? 1 : peso;
 
@@ -87,13 +98,13 @@ namespace GrafosT2M1
             {
                 Arestas[destino].Add((origem, val));
             }
-
+            
             return true;
         }
 
         public override bool RemoverAresta(int origem, int destino)
         {
-            if (!ExisteAresta(origem, destino)) return false;
+            if (!ExisteAresta(origem, destino)) return false; // Não remove caso não exista
 
             Arestas[origem].RemoveAll(aresta => aresta.destino == destino);
 
@@ -121,55 +132,6 @@ namespace GrafosT2M1
             return Arestas[vertice].Select(aresta => aresta.destino).ToList();
         }
 
-        protected override void BuscaProfundidade(int origem, ref List<int> verticesVisitadas)
-        {
-            verticesVisitadas.Add(origem);
-            foreach(var aresta in Arestas[origem])
-            {
-                if (!verticesVisitadas.Any(vertice => vertice == aresta.destino))
-                {
-                    BuscaProfundidade(aresta.destino, ref verticesVisitadas);
-                }
-            }
-        }
-
-        public override List<int> RetornarBuscaLargura(int origem)
-        {
-            Console.Write("\n\nBusca por largura: ");
-
-            List<int> verticesVisitadas = new List<int>();
-            List<int> fila = new List<int>();
-            fila.Add(origem);
-            verticesVisitadas.Add(origem);
-
-            while (fila.Count > 0) 
-            {
-                int atual = fila[0];
-
-                foreach (var aresta in Arestas[atual])
-                {
-                    if (!verticesVisitadas.Any(vertice => vertice == aresta.destino))
-                    {
-                        fila.Add(aresta.destino);
-                        verticesVisitadas.Add(aresta.destino);
-                    }
-                }
-                fila.RemoveAt(0);
-            }
-
-            for (int i = 0; i < verticesVisitadas.Count; i++)
-            {
-                Console.Write($"{LabelVertice(verticesVisitadas[i])}");
-                if (i < verticesVisitadas.Count - 1)
-                    Console.Write(" -> ");
-            }
-
-            return verticesVisitadas;
-        }
-
-        public override List<float> RetornaDijkstra(int origem) 
-        {
-            return new List<float>();
-        }
+        #endregion
     }
 }

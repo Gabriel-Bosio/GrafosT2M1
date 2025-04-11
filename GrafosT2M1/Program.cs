@@ -10,37 +10,25 @@ internal class Program
         LeitorGrafo leitor = new LeitorGrafo("C:\\Estudos_Univali\\Grafos\\GrafosT2M1\\GrafosT2M1\\grafo.txt");
 
         leitor.GeraGrafo(ref grafoM);
-        leitor.GeraGrafo(ref grafoL);
-
+        
         grafoM.ImprimeGrafo();
 
-        grafoM.RetornarBuscaProfundidade(5);
+        grafoM.ImprimeBusca( grafoM.RetornarBuscaProfundidade(5), false);
 
-        Console.WriteLine();
+        grafoM.ImprimeBusca(grafoM.RetornarBuscaLargura(5), true);
 
-        grafoM.RetornarBuscaLargura(5);
+        grafoM.ImprimeBusca(grafoM.RetornarDijkstra(5));
 
-        Console.WriteLine();
 
-        List<float> menorCaminhoM = grafoM.RetornaDijkstra(5);
-
-        Console.Write($"Menores caminhos Dijkstra a partir de {grafoM.LabelVertice(5)}: ");
-        for(int i = 0; i < menorCaminhoM.Count; i++)
-        {
-            Console.Write($"{grafoM.LabelVertice(i)}: {menorCaminhoM[i]}   ");
-        }
-
-        Console.WriteLine("\n\n\n\n");
+        leitor.GeraGrafo(ref grafoL);
 
         grafoL.ImprimeGrafo();
 
-        grafoL.RetornarBuscaProfundidade(5);
+        grafoL.ImprimeBusca(grafoL.RetornarBuscaProfundidade(5), false);
 
-        Console.WriteLine();
+        grafoL.ImprimeBusca(grafoL.RetornarBuscaLargura(5), true);
 
-        grafoL.RetornarBuscaLargura(5);
-
-        Console.WriteLine("\n\n\n\n");
+        grafoL.ImprimeBusca(grafoL.RetornarDijkstra(5));
     }
 
 
