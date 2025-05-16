@@ -1,6 +1,7 @@
 ﻿using GrafosT2M1;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Security.AccessControl;
@@ -57,9 +58,11 @@ namespace GrafosT2M1
 
                         int origem = int.Parse(partes[0]);
                         int destino = int.Parse(partes[1]);
-                        float peso = ponderado ? float.Parse(partes[2]) : 1;
+                        float peso = ponderado ? float.TryParse(partes[2], NumberStyles.Any, CultureInfo.InvariantCulture, out var resultado)? resultado : 1 : 1;
 
                         grafo.InserirAresta(origem, destino, peso);
+
+                        
                     }
                 }
             }
@@ -104,7 +107,7 @@ namespace GrafosT2M1
 
                         int origem = int.Parse(partes[0]);
                         int destino = int.Parse(partes[1]);
-                        float peso = ponderado ? float.Parse(partes[2]) : 1;
+                        float peso = ponderado ? float.TryParse(partes[2], NumberStyles.Any, CultureInfo.InvariantCulture, out var resultado) ? resultado : 1 : 1;
 
                         grafo.InserirAresta(origem, destino, peso);
                     }
