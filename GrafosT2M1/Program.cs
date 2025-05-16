@@ -8,17 +8,18 @@ internal class Program
         GrafoLista grafoL = null;
 
         //LeitorGrafo leitor = new LeitorGrafo(".\\..\\..\\..\\grafo.txt");
-        LeitorGrafo leitor = new LeitorGrafo(".\\..\\..\\..\\grafoAva.txt");
+        LeitorGrafo leitor = new LeitorGrafo(".\\..\\..\\..\\grafo.txt");
+        int origem = 0;
 
         leitor.GeraGrafo(ref grafoM);
         
         grafoM.ImprimeGrafo();
 
-        grafoM.ImprimeBusca( grafoM.RetornarBuscaProfundidade(0), false);
+        grafoM.ImprimeBusca(grafoM.RetornarBuscaProfundidade(origem), false);
 
-        grafoM.ImprimeBusca(grafoM.RetornarBuscaLargura(0), true);
+        grafoM.ImprimeBusca(grafoM.RetornarBuscaLargura(origem), true);
 
-        grafoM.ImprimeBusca(grafoM.RetornarDijkstra(0));
+        grafoM.ImprimeBusca(grafoM.RetornarDijkstra(origem));
 
 
         Console.WriteLine("\n\n\n\n");
@@ -27,11 +28,11 @@ internal class Program
 
         grafoL.ImprimeGrafo();
 
-        grafoL.ImprimeBusca(grafoL.RetornarBuscaProfundidade(0), false);
+        grafoL.ImprimeBusca(grafoL.RetornarBuscaProfundidade(origem), false);
 
-        grafoL.ImprimeBusca(grafoL.RetornarBuscaLargura(0), true);
+        grafoL.ImprimeBusca(grafoL.RetornarBuscaLargura(origem), true);
 
-        grafoL.ImprimeBusca(grafoL.RetornarDijkstra(0));
+        grafoL.ImprimeBusca(grafoL.RetornarDijkstra(origem));
 
         Console.WriteLine("\n\n\n\n");
     }

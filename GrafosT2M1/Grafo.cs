@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace GrafosT2M1
@@ -138,10 +140,10 @@ namespace GrafosT2M1
             return verticesVisitadas;
         }
 
-        public List<float> RetornarDijkstra(int origem)
+        public List<(float Distancia, List<int> Caminho)> RetornarDijkstra(int origem)
         {
             var tabela = new List<TabelaDijkstra>(); 
-            Vertices.ForEach(vertice => tabela.Add(new TabelaDijkstra(-1, false))); // Composto por distância e verificador de fechamento
+            Vertices.ForEach(vertice => tabela.Add(new TabelaDijkstra(-1, -1, false))); // Composto por distância e verificador de fechamento
 
             //Inicia distância 0 para origem e seleciona como vertice atual
             int verticeAtual = origem;
@@ -157,6 +159,7 @@ namespace GrafosT2M1
                     if (distancia < tabela[verticeDestino].Distancia || tabela[verticeDestino].Distancia < 0) 
                     {
                         tabela[verticeDestino].Distancia = distancia; //Atualiza a distância caso seja a primeira ou a menor
+                        tabela[verticeDestino].Anterior = verticeAtual;
                     }
                 }
                 tabela[verticeAtual].Fechado = true;
@@ -165,7 +168,16 @@ namespace GrafosT2M1
 
             } while (verticeAtual >= 0); //Encerra laço caso não tenha mais vértices acessíveis
 
-            return tabela.Select(x => x.Distancia).ToList(); //Retorna distâncias, o índice corresponde ao índice do vértice
+            List<(float Distancia, List<int>)> caminhos = new();
+            for(int i = 0; i < tabela.Count; i++)
+            {
+                float distancia = tabela[i].Distancia;
+                List<int> caminho = TabelaDijkstra.ObterCaminho(tabela, i);
+
+                caminhos.Add(new(distancia, caminho));
+            }
+
+            return caminhos;
         }
 
         //Sobrecarga que imprime ordem de acesso em buscas de profundidade e largura
@@ -185,12 +197,29 @@ namespace GrafosT2M1
         }
 
         //Sobrecarga que imprime distâncias de um ponto de origem para cada vértice com base em busca de Dijkstra
-        public void ImprimeBusca(List<float> distancias)
+        public void ImprimeBusca(List<(float Distancia, List<int> Caminho)> caminhos)
         {
-            Console.WriteLine($"\nMenores caminhos a partir de {LabelVertice(distancias.IndexOf(0))}:");
-            for (int i = 0; i < distancias.Count; i++)
+            Console.WriteLine($"\nMenores caminhos a partir de {LabelVertice(caminhos.IndexOf(caminhos.FirstOrDefault(x => x.Distancia == 0)))}: ");
+            for (int i = 0; i < caminhos.Count; i++)
             {
-                Console.WriteLine($"\n{LabelVertice(i)} = {distancias[i]}");
+                string dist = caminhos[i].Distancia != -1? Convert.ToString(caminhos[i].Distancia) : "Infinito";
+                Console.Write($"\n{LabelVertice(i)} : Distancia = {dist}     Caminho -- ");
+                if (caminhos[i].Caminho.Count > 0)
+                {
+                    for (int j = 0; j < caminhos[i].Caminho.Count; j++)
+                    {
+                        if (j < caminhos[i].Caminho.Count - 1)
+                        {
+                            Console.Write($"{LabelVertice(caminhos[i].Caminho[j])} -> ");
+                        }
+                        else
+                        {
+                            Console.Write($"{LabelVertice(caminhos[i].Caminho[j])}\n");
+                        }
+                    }
+                }
+                else Console.Write("Nenhum\n");
+                
             }
         }
         #endregion
